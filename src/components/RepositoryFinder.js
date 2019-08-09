@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Icon } from 'react-native-elements'
 import PropTypes from 'prop-types';
 import DefaultTextInput from './DefaultTextInput';
-import CustomText from './CustomText';
 import Constants from '../constants/Constants';
 
 const styles = StyleSheet.create({
@@ -14,7 +14,11 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1
     },
     buttonContainer: {
-        paddingLeft: 10
+        paddingLeft: 10,
+        paddingTop: 8,
+        paddingBottom: 8,
+        alignItems: 'center', 
+        justifyContent: 'center'
     }
 });
 
@@ -25,9 +29,13 @@ const repositoryFinder = ({ value, onChangeText, placeholderText, onPress }) => 
             onChangeText={onChangeText} 
             placeholderText={placeholderText} 
         />
-        <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
-            <CustomText text='+' fontSize={30} fontWeight='bold' textAlign='center' />
-        </TouchableOpacity>
+        <Icon
+            containerStyle={styles.buttonContainer}
+            name='plus'
+            type='font-awesome'
+            color={Constants.colors.BLACK}
+            onPress={onPress} 
+        />
     </View>
 );
 

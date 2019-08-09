@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
-import CustomText from '../components/CustomText';
+import { StyleSheet, View, ScrollView, FlatList } from 'react-native';
 import Constants from '../constants/Constants';
 import NavigationHeader from '../components/NavigationHeader';
 import RepositoryFinder from '../components/RepositoryFinder';
-import { FlatList } from 'react-native-gesture-handler';
+import ListDefault from '../components/ListDefault';
 
 
 const styles = StyleSheet.create({
@@ -23,6 +22,21 @@ export default class Home extends Component {
 
   state = {
     repositoryFinderText: '',
+    repositories: [
+      {
+        id: 111,
+        organizationName: 'RocketSeat',
+        repositoryName: 'rocketNative',
+        avatar: ''
+      },
+      {
+        id: 222,
+        organizationName: 'React Community',
+        repositoryName: 'react-navigation',
+        avatar: ''
+      }
+    ], 
+    loading: false
   };
 
   goToRepositoryDetails = () => {
@@ -38,8 +52,18 @@ export default class Home extends Component {
     this.setState({repositoryFinderText: this.state.repositoryFinderText + '1'});
   }
 
+  handleRepositoryList() {
+    const { repositories } = this.state;
+    return repositories.map((item) => ({
+      primaryTitle: item.repositoryName,
+      secondaryTitle: item.organizationName,
+      icon: item.avatar,
+      onPress: () => {}
+    }));
+  }
+
   render() {
-    const { repositoryFinderText } = this.state;
+    const { repositories, repositoryFinderText } = this.state;
 
     return (
       <View style={styles.container}>
@@ -50,9 +74,7 @@ export default class Home extends Component {
             onPress={this.handleFindRepository}
             placeholderText='Adicionar novo repositório'
           />
-          {/* <FlatList 
-            data={repositories}
-          /> */}
+          <ListDefault dataList={this.handleRepositoryList()} />
         </ScrollView>
       </View>
     );
