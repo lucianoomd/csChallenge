@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     image: {
         height: 50,
         width: 50,
-        marginRight: 15
+        marginRight: 15,
     },
     textContainer: {
         flex: 1,
@@ -29,15 +29,16 @@ const styles = StyleSheet.create({
 
 const listItemDefault = ({ primaryTitle, secondaryTitle, icon, onPress }) => (
     <TouchableOpacity style={styles.container} onPress={onPress}>
-        <View style={styles.image}>
-            <Image style={styles.image} />
+        <View>
+            <Image style={styles.image} source={{uri : icon}} />
         </View>
 
         <View style={styles.textContainer}>
             <CustomText 
                 text={primaryTitle} 
                 fontSize={18} 
-                fontWeight='bold' 
+                fontWeight='bold'
+                numberOfLines={1}
             />
 
             <View style={styles.textSeparator}/>

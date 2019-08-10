@@ -3,9 +3,12 @@ import { FlatList, View, StyleSheet } from 'react-native';
 import ListItemDefault from '../components/ListItemDefault';
 
 const styles = StyleSheet.create({
-    repositoryList: {
+    defaultList: {
         flex: 1,
-        paddingTop: 20
+        marginTop: 20,
+    },
+    contentContainer: {
+        paddingBottom: 20
     },
     itemSeparator: {
         marginBottom: 10
@@ -18,8 +21,6 @@ const listDefault = ({ dataList }) => {
     );
 
     keyExtractor = (item, index) => index.toString();
-
-    console.log('11111: ', dataList);
 
     renderItem = ({ item }) => {
         return (
@@ -34,7 +35,8 @@ const listDefault = ({ dataList }) => {
 
     return (
         <FlatList
-            style={styles.repositoryList}
+            style={styles.defaultList}
+            contentContainerStyle={styles.contentContainer}
             data={dataList}
             renderItem={renderItem}
             keyExtractor={keyExtractor}

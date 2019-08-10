@@ -4,14 +4,16 @@ import Constants from '../constants/Constants';
 import NavigationHeader from '../components/NavigationHeader';
 import RepositoryFinder from '../components/RepositoryFinder';
 import ListDefault from '../components/ListDefault';
-
+import Utils from '../utils/Utils';
+import GenerateBeans from '../utils/GenerateBeans';
+import MessageBox from '../components/MessageBox';
+import Spinner from '../components/Spinner';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Constants.colors.SUPER_LIGHT_GRAY,
-    paddingLeft: 20,
-    paddingRight: 20
+    padding: 20
   },
 });
 
@@ -22,21 +24,9 @@ export default class Home extends Component {
 
   state = {
     repositoryFinderText: '',
-    repositories: [
-      {
-        id: 111,
-        organizationName: 'RocketSeat',
-        repositoryName: 'rocketNative',
-        avatar: ''
-      },
-      {
-        id: 222,
-        organizationName: 'React Community',
-        repositoryName: 'react-navigation',
-        avatar: ''
-      }
-    ], 
-    loading: false
+    repositories: [],
+    loading: false,
+    error: false
   };
 
   goToRepositoryDetails = () => {
@@ -49,21 +39,67 @@ export default class Home extends Component {
   }
 
   handleFindRepository = () => {
-    this.setState({repositoryFinderText: this.state.repositoryFinderText + '1'});
+    const { repositoryFinderText, repositories } = this.state;
+
+    const repositoryTextValidation = this.validateRepositoryFinderText();
+    
+    if (!repositoryTextValidation.errorMessage) {
+      this.setState({ loading: true, error: false });
+      const mountedURL = `${Constants.api.GET_REPOSITORY}${repositoryFinderText}`;
+  
+      const callback = (result) => {
+        if (!result.error) {
+          
+          const repository = GenerateBeans.repositoryItem(result.data);
+          repositories.push(repository);
+          this.setState({ repositories, loading: false, repositoryFinderText: '' });
+        } else {
+          this.setState({ error: result.error, loading: false });
+        }
+      };
+  
+      Utils.fetchData(mountedURL, callback);
+    } else {
+      this.setState({ error: repositoryTextValidation.errorMessage });
+    }
+  }
+
+  validateRepositoryFinderText = () => {
+    const { repositoryFinderText } = this.state;
+
+    if(repositoryFinderText.split('/').length !== 2) {
+      return {
+         errorMessage: 
+         'O campo deve ser preenchido no seguinte formato: \norganização/repositório (Exemplo: “rocketseat/comunidade”)' 
+        };
+    }
+    return true;
   }
 
   handleRepositoryList() {
     const { repositories } = this.state;
+    const { navigation } = this.props;
     return repositories.map((item) => ({
       primaryTitle: item.repositoryName,
       secondaryTitle: item.organizationName,
       icon: item.avatar,
-      onPress: () => {}
+      onPress: () => {
+          navigation.navigate('RepositoryDetails', {
+          repositoryName: item.repositoryName,
+          repositoryFullName: `${item.organizationName}/${item.repositoryName}`
+        });
+      }
     }));
   }
 
   render() {
-    const { repositories, repositoryFinderText } = this.state;
+    const { loading, error, repositoryFinderText } = this.state;
+
+    if ( loading ) return (
+      <View style={styles.container}>
+        <Spinner />
+      </View>
+    );
 
     return (
       <View style={styles.container}>
@@ -74,6 +110,14 @@ export default class Home extends Component {
             onPress={this.handleFindRepository}
             placeholderText='Adicionar novo repositório'
           />
+          { error ?
+              <MessageBox
+                text={error}
+                isMsgError
+              /> : 
+            null 
+          }
+
           <ListDefault dataList={this.handleRepositoryList()} />
         </ScrollView>
       </View>

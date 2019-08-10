@@ -10,17 +10,24 @@ const styles = {
     fontFamily: 'Geomanist-Book',
     fontWeight: 'normal',
     fontSize: 16,
+    zIndex: -1
   },
 };
 
-const customText = ({ text, fontSize, color, fontWeight, textAlign }) => {
+const customText = ({ text, fontSize, color, fontWeight, textAlign, numberOfLines }) => {
   const textStyle = { ...styles.defaultTextStyle };
   if (fontSize) textStyle.fontSize = fontSize;
   if (color) textStyle.color = color;
   if (fontWeight) textStyle.fontWeight = fontWeight;
   if (textAlign) textStyle.textAlign = textAlign;
 
-  return <Text style={textStyle}>{text}</Text>;
+  return (
+    <Text 
+      style={textStyle} 
+      numberOfLines={numberOfLines ? numberOfLines : 0}>
+        {text}
+    </Text>
+  );
 };
 
 customText.propTypes = {
@@ -28,14 +35,16 @@ customText.propTypes = {
   fontSize: PropTypes.number,
   color: PropTypes.string,
   fontWeight: PropTypes.string,
-  textAlign: PropTypes.string
+  textAlign: PropTypes.string,
+  numberOfLines: PropTypes.number
 };
 
 customText.defaultProps = {
   fontSize: 0,
   color: '',
   fontWeight: '',
-  textAlign: ''
+  textAlign: '',
+  numberOfLines: 0
 };
 
 

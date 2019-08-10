@@ -7,18 +7,17 @@ import Constants from '../constants/Constants';
 
 const styles = StyleSheet.create({
     container: {
-        paddingTop: 20,
         paddingBottom: 20,
         flexDirection: 'row',
         borderBottomColor: Constants.colors.LIGHT_GRAY,
-        borderBottomWidth: 1
+        borderBottomWidth: 1,
+        justifyContent: 'center'
     },
     buttonContainer: {
         paddingLeft: 10,
-        paddingTop: 8,
-        paddingBottom: 8,
-        alignItems: 'center', 
-        justifyContent: 'center'
+    },
+    icon: {
+        padding: 5
     }
 });
 
@@ -31,6 +30,7 @@ const repositoryFinder = ({ value, onChangeText, placeholderText, onPress }) => 
         />
         <Icon
             containerStyle={styles.buttonContainer}
+            iconStyle={styles.icon}
             name='plus'
             type='font-awesome'
             color={Constants.colors.BLACK}
