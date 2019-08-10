@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, ScrollView, FlatList } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Constants from '../constants/Constants';
 import NavigationHeader from '../components/NavigationHeader';
 import RepositoryFinder from '../components/RepositoryFinder';
@@ -25,9 +26,32 @@ export default class Home extends Component {
   state = {
     repositoryFinderText: '',
     repositories: [],
-    loading: false,
+    loading: true,
     error: false
   };
+
+  componentDidMount() {
+    this.handleRepositoryUpdate();
+  }
+
+  getData = async (key) => {
+    try {
+      const data = await AsyncStorage.getItem(key);
+      const parsedData = JSON.parse(data);
+      if(data) return { data: parsedData };
+    } catch(error) {
+      return { error };
+    }
+  }
+  
+  storeData = async (key, data) => {
+    try {
+      const stringfiedData = JSON.stringify(data);
+      await AsyncStorage.setItem(key, stringfiedData);
+    } catch (error) {
+      return { error };
+    }
+  }
 
   goToRepositoryDetails = () => {
     const { navigation } = this.props;
@@ -38,9 +62,31 @@ export default class Home extends Component {
     this.setState({repositoryFinderText: text});
   }
 
+  repeatedRepository = (repository) => {
+    const { repositories } = this.state;
+    for (let i = 0; i < repositories.length; i++) {
+      const temporaryRepository = repositories[i];
+      if (temporaryRepository.id === repository.id) return true;
+    }
+    return false;
+  }
+
+  handleRepositoryUpdate = () => {
+    this.setState({ loading: true }, () => {
+      this.getData(Constants.asyncStorage.REPOSITORIES).then((result) => {
+        const newState = { loading: false };
+        if(result){
+          if (result.error) newState.error = result.error;
+          else newState.repositories = result.data;
+        }
+        
+        this.setState(newState);
+      });
+    });
+  }
+
   handleFindRepository = () => {
     const { repositoryFinderText, repositories } = this.state;
-
     const repositoryTextValidation = this.validateRepositoryFinderText();
     
     if (!repositoryTextValidation.errorMessage) {
@@ -51,8 +97,13 @@ export default class Home extends Component {
         if (!result.error) {
           
           const repository = GenerateBeans.repositoryItem(result.data);
-          repositories.push(repository);
-          this.setState({ repositories, loading: false, repositoryFinderText: '' });
+          if (!this.repeatedRepository(repository)) repositories.push(repository);
+
+          this.setState({ repositories, loading: false, repositoryFinderText: '' }, () => {
+            this.storeData(Constants.asyncStorage.REPOSITORIES, repositories).then(() => {}, error => {
+              this.setState({ error });
+            });
+          });
         } else {
           this.setState({ error: result.error, loading: false });
         }
@@ -118,7 +169,11 @@ export default class Home extends Component {
             null 
           }
 
-          <ListDefault dataList={this.handleRepositoryList()} />
+          <ListDefault 
+            dataList={this.handleRepositoryList()}
+            updateList={this.handleRepositoryUpdate}
+            loading={loading}
+          />
         </ScrollView>
       </View>
     );

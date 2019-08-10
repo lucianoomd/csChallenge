@@ -6,8 +6,6 @@ export default class Utils {
 
         const mountedURL = `${APIPath}${endpoint}`;
 
-        console.log('00000: ', mountedURL);
-
         fetch(mountedURL).then(result => {
             result.json().then(parsedData => {
                 if (parsedData.message) callback({error: parsedData.message});

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, View, StyleSheet } from 'react-native';
+import { FlatList, View, StyleSheet, RefreshControl } from 'react-native';
 import ListItemDefault from '../components/ListItemDefault';
 
 const styles = StyleSheet.create({
@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     }
 });
 
-const listDefault = ({ dataList }) => {
+const listDefault = ({ dataList, updateList, loading }) => {
     itemSeparator = () => (
         <View style={styles.itemSeparator} />
     );
@@ -41,6 +41,11 @@ const listDefault = ({ dataList }) => {
             renderItem={renderItem}
             keyExtractor={keyExtractor}
             ItemSeparatorComponent={itemSeparator}
+            refreshControl={ 
+                updateList && loading ?
+                    <RefreshControl refreshing={loading} onRefresh={updateList} /> :
+                null
+            }
         />
     )
 };

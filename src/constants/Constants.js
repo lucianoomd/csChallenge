@@ -21,4 +21,8 @@ export default class Constants {
     OPEN: 'Abertas',
     CLOSED: 'Fechadas'
   }
+
+  static asyncStorage = {
+    REPOSITORIES: 'repositories'
+  }
 }
